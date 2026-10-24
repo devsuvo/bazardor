@@ -53,3 +53,10 @@ body {
   background-color: var(--color-base-200);
   color: var(--color-base-content);
 }
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
