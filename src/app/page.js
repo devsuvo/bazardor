@@ -1,23 +1,22 @@
+import Hero from "@/components/Hero";
+import ProductCard from "@/components/ProductCard";
 import { getProducts } from "@/lib/api";
-import { formatBnDate, toBn, formatTaka } from "@/lib/bn";
-import { getMovers } from "@/lib/stats";
 
 export default async function Home() {
   const products = await getProducts();
-  const risers = getMovers(products, "up");
 
   return (
-    <main className="mx-auto max-w-6xl p-6">
-      <h1 className="text-3xl font-bold">বাজার দর</h1>
-      <p className="mt-2 opacity-70">{formatBnDate()}</p>
-      <p className="mt-2">মোট পণ্য: {toBn(products.length)}টি</p>
-      <ul className="mt-4 list-disc pl-6">
-        {risers.map((p) => (
-          <li key={p.id}>
-            {p.image} {p.nameBn} — {formatTaka(p.today)}
-          </li>
-        ))}
-      </ul>
+    <main className="mx-auto max-w-6xl space-y-10 px-4 py-6">
+      <Hero />
+
+      <section id="সব-পণ্য" className="scroll-mt-40">
+        <h2 className="mb-4 text-xl font-bold">সব পণ্য</h2>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {products.map((p) => (
+            <ProductCard key={p.id} product={p} />
+          ))}
+        </div>
+      </section>
     </main>
   );
 }
