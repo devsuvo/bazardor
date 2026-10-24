@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -9,11 +9,17 @@ import { authErrorMessage } from "@/lib/auth-errors";
 import Field from "./Field";
 import SocialButtons from "./SocialButtons";
 
-export default function SignInForm() {
+export default function SignInForm({ next = "/", fromProtected = false }) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (fromProtected) {
+      toast.error("এই পাতা দেখতে আগে সাইন ইন করুন", { id: "protected-route" });
+    }
+  }, [fromProtected]);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -36,7 +42,7 @@ export default function SignInForm() {
       }
 
       toast.success("সফলভাবে সাইন ইন হয়েছে");
-      router.push("/");
+      router.push(next);
       router.refresh();
     } catch {
       toast.error("কিছু একটা সমস্যা হয়েছে, আবার চেষ্টা করুন");
@@ -82,7 +88,7 @@ export default function SignInForm() {
         <span className="h-px flex-1 bg-base-content/10" />
       </div>
 
-      <SocialButtons />
+      <SocialButtons callbackURL={next} />
 
       <p className="text-center text-sm text-base-content/70">
         অ্যাকাউন্ট নেই?{" "}
