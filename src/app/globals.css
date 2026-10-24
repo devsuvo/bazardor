@@ -60,3 +60,10 @@ body {
     display: none;
   }
 }
+
+/* ===== Price ticker marquee ===== */
+
+
+.marquee-track:hover {
+  animation-play-state: paused;
+}

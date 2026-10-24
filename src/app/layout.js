@@ -1,6 +1,8 @@
 import { Hind_Siliguri } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import Ticker from "@/components/Ticker";
+import Footer from "@/components/Footer";
 
 const hind = Hind_Siliguri({
   subsets: ["bengali", "latin"],
@@ -18,9 +20,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="bn" data-theme="bazardor" className={hind.variable}>
-      <body className="min-h-screen font-sans antialiased">
+      <body className="flex min-h-screen flex-col font-sans antialiased">
         <Navbar />
-        {children}
+        <Ticker />
+        <div className="flex-1">{children}</div>
+        <Footer />
       </body>
     </html>
   );
