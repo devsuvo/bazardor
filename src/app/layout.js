@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Ticker from "@/components/Ticker";
 import Footer from "@/components/Footer";
+import ToasterProvider from "@/components/ToasterProvider";
 
 const hind = Hind_Siliguri({
   subsets: ["bengali", "latin"],
@@ -21,6 +22,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="bn" data-theme="bazardor" className={hind.variable}>
       <body className="flex min-h-screen flex-col font-sans antialiased">
+        <ToasterProvider />
         <Navbar />
         <Ticker />
         <div className="flex-1">{children}</div>

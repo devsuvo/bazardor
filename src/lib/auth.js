@@ -22,9 +22,10 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
 
 export const auth = betterAuth({
   database: mongodbAdapter(db, { client }),
-  emailAndPassword: {
+    emailAndPassword: {
     enabled: true,
     minPasswordLength: 8,
+    autoSignIn: false,
   },
   socialProviders,
   plugins: [nextCookies()], // সবসময় সবার শেষে
