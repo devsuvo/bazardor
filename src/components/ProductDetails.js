@@ -14,6 +14,11 @@ import {
   marketAverage,
   sortMarketsByAverage,
 } from "@/lib/stats";
+import Money from "./Money";
+
+// সারির মাঝের লাইনের রং। Figma তে গাঢ় দেখায়।
+// হালকা চাইলে "border-base-content" কে "border-base-content/5" করো।
+const ROW_LINE = "border-b border-base-content last:border-b-0";
 
 function ChangeSentence({ diff }) {
   if (diff > 0) {
@@ -38,10 +43,12 @@ function ChangeSentence({ diff }) {
 
 function StatCard({ label, value, caption, valueClass = "" }) {
   return (
-    <div className="rounded-2xl border border-base-300 bg-base-100 px-5 py-4">
-      <p className="text-xs text-base-content/60">{label}</p>
-      <p className={`text-2xl font-bold leading-8 ${valueClass}`}>{value}</p>
-      <p className="text-xs text-base-content/60">{caption}</p>
+    <div className="rounded-2xl border border-base-300 bg-base-100 px-6 py-4">
+      <p className="text-xs leading-[18px] text-base-content/60">{label}</p>
+      <p className={`text-2xl font-bold leading-8 ${valueClass}`}>
+        <Money value={value} />
+      </p>
+      <p className="text-xs leading-[18px] text-base-content/60">{caption}</p>
     </div>
   );
 }
@@ -56,7 +63,6 @@ export default function ProductDetails({ product }) {
     change,
     category,
     categoryNameBn,
-    categoryIcon,
     markets,
   } = product;
 
@@ -90,37 +96,35 @@ export default function ProductDetails({ product }) {
         </ol>
       </nav>
 
-      <header className="flex flex-col gap-5 rounded-2xl border border-base-300 bg-base-100 p-5 sm:flex-row sm:items-center">
+      <header className="flex flex-col gap-4 rounded-2xl border border-base-300 bg-base-100 p-5 sm:flex-row sm:items-center">
         <span className="flex size-20 shrink-0 items-center justify-center rounded-2xl bg-base-200 text-4xl">
           {image}
         </span>
 
         <div className="min-w-0 flex-1">
           <h1 className="text-3xl font-bold leading-9">{nameBn}</h1>
-          <div className="mt-2 flex flex-wrap items-center gap-2">
+          <p className="text-sm leading-5 text-base-content/70">
+            {UNIT_LABEL[unit]} ·{" "}
             <Link
               href={`/category/${category}`}
-              className="rounded-full bg-base-200 px-3 py-1 text-xs font-semibold hover:bg-base-300"
+              className="hover:text-primary hover:underline"
             >
-              {categoryIcon} {categoryNameBn}
+              {categoryNameBn}
             </Link>
-            <span className="rounded-full bg-base-200 px-3 py-1 text-xs font-semibold">
-              {UNIT_LABEL[unit]}
-            </span>
-          </div>
-          <p className="mt-2 text-sm">
+          </p>
+          <p className="mt-2 text-sm leading-5">
             <ChangeSentence diff={diff} />
           </p>
         </div>
 
-        <div className="rounded-2xl bg-base-200 px-5 py-4 text-center sm:min-w-36">
-          <p className="text-sm text-base-content/70">আজকের দাম</p>
+        <div className="rounded-2xl bg-base-200 px-5 py-4 text-center">
+          <p className="text-sm leading-5 text-base-content/70">আজকের দাম</p>
           <p className="text-3xl font-bold leading-9">{formatNumber(today)}</p>
-          <p className="text-sm text-base-content/70">
+          <p className="text-sm leading-5 text-base-content/70">
             টাকা / {UNIT_SHORT[unit]}
           </p>
           <p
-            className={`mt-1 text-sm font-semibold ${CHANGE_COLOR[change.dir]}`}
+            className={`mt-1 text-sm font-semibold leading-5 ${CHANGE_COLOR[change.dir]}`}
           >
             {ARROW[change.dir]} {formatPct(change.pct)}
           </p>
@@ -129,23 +133,23 @@ export default function ProductDetails({ product }) {
 
       <section className="space-y-6 rounded-2xl border border-base-300 bg-base-100 p-5">
         <div className="space-y-3">
-          <h2 className="text-lg font-semibold">দামের সারসংক্ষেপ</h2>
+          <h2 className="text-lg font-semibold leading-7">দামের সারসংক্ষেপ</h2>
           <div className="grid gap-3 sm:grid-cols-3">
             <StatCard
               label="সর্বনিম্ন দাম"
-              value={formatTaka(stats.min)}
+              value={stats.min}
               caption="সবচেয়ে কম দামের বাজার"
               valueClass="text-success"
             />
             <StatCard
               label="সর্বাধিক দাম"
-              value={formatTaka(stats.max)}
+              value={stats.max}
               caption="সবচেয়ে বেশি দামের বাজার"
               valueClass="text-error"
             />
             <StatCard
               label="গড় দাম"
-              value={formatTaka(stats.avg)}
+              value={stats.avg}
               caption={`${UNIT_LABEL[unit]}-এর হিসাবে`}
               valueClass="text-primary"
             />
@@ -153,35 +157,56 @@ export default function ProductDetails({ product }) {
         </div>
 
         <div className="space-y-3">
-          <h2 className="text-lg font-semibold">বাজারভিত্তিক আজকের দাম</h2>
+          <h2 className="text-lg font-semibold leading-7">
+            বাজারভিত্তিক আজকের দাম
+          </h2>
           <div className="overflow-x-auto rounded-2xl border border-base-300">
-            <table className="w-full min-w-[640px] text-sm">
+            <table className="w-full min-w-[640px] table-fixed text-sm">
+              <colgroup>
+                <col style={{ width: "28.5%" }} />
+                <col style={{ width: "18.5%" }} />
+                <col style={{ width: "16%" }} />
+                <col style={{ width: "16%" }} />
+                <col style={{ width: "21%" }} />
+              </colgroup>
               <thead>
-                <tr className="text-base-content/60">
-                  <th className="px-4 py-3 text-left font-bold">বাজার</th>
-                  <th className="px-4 py-3 text-left font-bold">বিভাগ</th>
-                  <th className="px-4 py-3 text-right font-bold">সর্বনিম্ন</th>
-                  <th className="px-4 py-3 text-right font-bold">সর্বাধিক</th>
-                  <th className="px-4 py-3 text-right font-bold">গড়</th>
+                <tr className="border-b border-base-content/5 text-base-content/60">
+                  <th className="px-4 pb-[13px] pt-3 text-left font-bold leading-[21px]">
+                    বাজার
+                  </th>
+                  <th className="px-4 pb-[13px] pt-3 text-left font-bold leading-[21px]">
+                    বিভাগ
+                  </th>
+                  <th className="px-4 pb-[13px] pt-3 text-right font-bold leading-[21px]">
+                    সর্বনিম্ন
+                  </th>
+                  <th className="px-4 pb-[13px] pt-3 text-right font-bold leading-[21px]">
+                    সর্বাধিক
+                  </th>
+                  <th className="px-4 pb-[13px] pt-3 text-right font-bold leading-[21px]">
+                    গড়
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {sortedMarkets.map((m) => (
                   <tr
                     key={`${m.division}-${m.market}`}
-                    className="even:bg-base-200"
+                    className={`${ROW_LINE} even:bg-base-200`}
                   >
-                    <td className="px-4 py-3 font-medium">{m.market}</td>
-                    <td className="px-4 py-3 text-base-content/70">
+                    <td className="px-4 py-3 font-medium leading-[21px]">
+                      {m.market}
+                    </td>
+                    <td className="px-4 py-3 leading-[21px] text-base-content/70">
                       {m.division}
                     </td>
-                    <td className="px-4 py-3 text-right">
+                    <td className="px-4 py-3 text-right leading-[21px]">
                       {formatTaka(m.min)}
                     </td>
-                    <td className="px-4 py-3 text-right">
+                    <td className="px-4 py-3 text-right leading-[21px]">
                       {formatTaka(m.max)}
                     </td>
-                    <td className="px-4 py-3 text-right font-semibold">
+                    <td className="px-4 py-3 text-right font-semibold leading-[21px]">
                       {formatTakaExact(marketAverage(m))}
                     </td>
                   </tr>
@@ -192,14 +217,8 @@ export default function ProductDetails({ product }) {
         </div>
       </section>
 
-      <div>
-        <Link
-          href={`/category/${category}`}
-          className="btn btn-ghost font-semibold"
-        >
-          {categoryIcon} সব {categoryNameBn}
-        </Link>
-      </div>
+      {/* Figma তে এখানে ৪০px খালি জায়গা আছে, কোনো button নেই */}
+      <div className="h-10" aria-hidden="true" />
     </main>
   );
 }

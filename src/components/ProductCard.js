@@ -4,8 +4,8 @@ import {
   CHANGE_COLOR,
   UNIT_LABEL,
   formatPct,
-  formatTaka,
 } from "@/lib/bn";
+import Money from "./Money";
 
 export default function ProductCard({ product }) {
   const { slug, image, nameBn, unit, today, change } = product;
@@ -23,18 +23,22 @@ export default function ProductCard({ product }) {
           <h3 className="truncate text-base font-semibold leading-6">
             {nameBn}
           </h3>
-          <p className="text-xs text-base-content/60">{UNIT_LABEL[unit]}</p>
+          <p className="text-xs leading-4 text-base-content/60">
+            {UNIT_LABEL[unit]}
+          </p>
         </div>
       </div>
 
       <div className="flex items-end justify-between gap-2">
         <div>
-          <p className="text-xs text-base-content/70">আজকের দাম</p>
-          <p className="text-xl font-bold leading-7">{formatTaka(today)}</p>
+          <p className="text-xs leading-4 text-base-content/70">আজকের দাম</p>
+          <p className="text-xl font-bold leading-7">
+            <Money value={today} />
+          </p>
         </div>
 
         <span
-          className={`inline-flex items-center gap-1 rounded-full bg-base-200 px-2 py-1 text-xs font-semibold ${CHANGE_COLOR[change.dir]}`}
+          className={`inline-flex items-center gap-1 rounded-full bg-base-200 px-2 py-1 text-xs font-semibold leading-4 ${CHANGE_COLOR[change.dir]}`}
         >
           <span>{ARROW[change.dir]}</span>
           <span>{formatPct(change.pct)}</span>

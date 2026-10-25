@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
+import UserAvatar from "./UserAvatar";
 
 export default function AuthButtons({ user }) {
   const [open, setOpen] = useState(false);
@@ -49,19 +50,10 @@ export default function AuthButtons({ user }) {
         aria-expanded={open}
         className="btn btn-ghost btn-sm sm:btn-md gap-2 px-2 text-sm font-medium"
       >
-        {user.image ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={user.image}
-            alt=""
-            referrerPolicy="no-referrer"
-            className="size-8 rounded-[10px] object-cover sm:size-9"
-          />
-        ) : (
-          <span className="flex size-8 items-center justify-center rounded-[10px] bg-primary text-sm font-bold text-primary-content sm:size-9">
-            {firstName.charAt(0).toUpperCase()}
-          </span>
-        )}
+        <UserAvatar
+          user={user}
+          className="size-8 rounded-[10px] sm:size-9"
+        />
         <span className="hidden max-w-24 truncate sm:inline">{firstName}</span>
         <span className="text-xs opacity-60">▾</span>
       </button>
