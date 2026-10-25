@@ -2,31 +2,24 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
 
-export default function AuthButtons() {
-  const router = useRouter();
-  const { data: session, isPending } = authClient.useSession();
+export default function AuthButtons({ user }) {
   const [open, setOpen] = useState(false);
 
-  if (isPending) {
-    return <div className="skeleton h-10 w-28 shrink-0 rounded-lg" />;
-  }
-
-  if (!session) {
+  if (!user) {
     return (
       <div className="flex shrink-0 items-center gap-2">
         <Link
           href="/signin"
-          className="btn btn-ghost btn-sm sm:btn-md text-sm font-semibold"
+          className="btn btn-ghost btn-sm sm:btn-md text-xs font-semibold sm:text-sm"
         >
           সাইন ইন
         </Link>
         <Link
           href="/signup"
-          className="btn btn-primary btn-sm sm:btn-md text-sm font-semibold"
+          className="btn btn-primary btn-sm sm:btn-md text-xs font-semibold sm:text-sm"
         >
           সাইন আপ
         </Link>
@@ -34,7 +27,6 @@ export default function AuthButtons() {
     );
   }
 
-  const { user } = session;
   const firstName = (user.name || "ব্যবহারকারী").split(" ")[0];
 
   async function handleSignOut() {
@@ -42,8 +34,7 @@ export default function AuthButtons() {
     try {
       await authClient.signOut();
       toast.success("সফলভাবে সাইন আউট হয়েছে");
-      router.push("/");
-      router.refresh();
+      setTimeout(() => window.location.assign("/"), 700);
     } catch {
       toast.error("সাইন আউট করা যায়নি, আবার চেষ্টা করুন");
     }
@@ -64,10 +55,10 @@ export default function AuthButtons() {
             src={user.image}
             alt=""
             referrerPolicy="no-referrer"
-            className="size-8 rounded-[10px] object-cover"
+            className="size-8 rounded-[10px] object-cover sm:size-9"
           />
         ) : (
-          <span className="flex size-8 items-center justify-center rounded-[10px] bg-primary text-sm font-bold text-primary-content">
+          <span className="flex size-8 items-center justify-center rounded-[10px] bg-primary text-sm font-bold text-primary-content sm:size-9">
             {firstName.charAt(0).toUpperCase()}
           </span>
         )}

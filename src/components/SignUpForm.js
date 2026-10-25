@@ -20,21 +20,28 @@ export default function SignUpForm() {
     confirm: "",
   });
   const [loading, setLoading] = useState(false);
+  const [formError, setFormError] = useState("");
 
   const update = (key) => (e) =>
     setForm((prev) => ({ ...prev, [key]: e.target.value }));
 
+  function fail(message) {
+    setFormError(message);
+    toast.error(message);
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
+    setFormError("");
+
     const name = form.name.trim();
     const email = form.email.trim();
 
-    if (!name) return toast.error("আপনার নাম লিখুন");
-    if (!EMAIL_RE.test(email)) return toast.error("সঠিক ইমেইল দিন");
+    if (!name) return fail("আপনার নাম লিখুন");
+    if (!EMAIL_RE.test(email)) return fail("সঠিক ইমেইল দিন");
     if (form.password.length < 8)
-      return toast.error("পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে");
-    if (form.password !== form.confirm)
-      return toast.error("দুটো পাসওয়ার্ড মিলছে না");
+      return fail("পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে");
+    if (form.password !== form.confirm) return fail("দুটো পাসওয়ার্ড মিলছে না");
 
     setLoading(true);
     try {
@@ -45,14 +52,16 @@ export default function SignUpForm() {
       });
 
       if (error) {
-        toast.error(authErrorMessage(error, "অ্যাকাউন্ট তৈরি করা যায়নি"));
+        console.error("sign-up error:", error);
+        fail(authErrorMessage(error, "অ্যাকাউন্ট তৈরি করা যায়নি"));
         return;
       }
 
       toast.success("অ্যাকাউন্ট তৈরি হয়েছে, এখন সাইন ইন করুন");
       router.push("/signin");
-    } catch {
-      toast.error("কিছু একটা সমস্যা হয়েছে, আবার চেষ্টা করুন");
+    } catch (err) {
+      console.error("sign-up exception:", err);
+      fail("সার্ভারের সাথে যোগাযোগ করা যায়নি, আবার চেষ্টা করুন");
     } finally {
       setLoading(false);
     }
@@ -97,6 +106,16 @@ export default function SignUpForm() {
           value={form.confirm}
           onChange={update("confirm")}
         />
+
+        {formError && (
+          <div
+            role="alert"
+            className="rounded-lg border border-error/30 bg-error/10 px-3 py-2 text-sm text-error"
+          >
+            {formError}
+          </div>
+        )}
+
         <button
           type="submit"
           disabled={loading}

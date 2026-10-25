@@ -4,7 +4,11 @@ export default function Field({ label, id, ...props }) {
       <label htmlFor={id} className="text-sm font-medium">
         {label}
       </label>
-      <input id={id} className="input w-full" {...props} />
+      <input
+        id={id}
+        className="input w-full focus:[--input-color:var(--color-primary)] focus-within:[--input-color:var(--color-primary)]"
+        {...props}
+      />
     </div>
   );
 }

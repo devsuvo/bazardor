@@ -8,5 +8,16 @@ const MESSAGES = [
 export function authErrorMessage(error, fallback) {
   const code = String(error?.code ?? "");
   const hit = MESSAGES.find(([key]) => code.includes(key));
-  return hit ? hit[1] : fallback;
+  if (hit) return hit[1];
+
+  const status = Number(error?.status);
+  if (status === 401) return "ইমেইল বা পাসওয়ার্ড ভুল হয়েছে";
+  if (status === 403)
+    return "এই ঠিকানা থেকে অনুমতি নেই। ঠিকানা বারে localhost:3000 ব্যবহার করুন";
+  if (status === 429)
+    return "অনেকবার চেষ্টা করা হয়েছে, একটু পরে আবার চেষ্টা করুন";
+  if (status >= 500)
+    return "সার্ভারে সমস্যা হয়েছে, terminal এর লাল লেখাটি দেখুন";
+
+  return fallback;
 }

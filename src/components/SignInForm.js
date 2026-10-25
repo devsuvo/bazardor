@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
 import { authErrorMessage } from "@/lib/auth-errors";
@@ -10,10 +9,10 @@ import Field from "./Field";
 import SocialButtons from "./SocialButtons";
 
 export default function SignInForm({ next = "/", fromProtected = false }) {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [formError, setFormError] = useState("");
 
   useEffect(() => {
     if (fromProtected) {
@@ -21,11 +20,17 @@ export default function SignInForm({ next = "/", fromProtected = false }) {
     }
   }, [fromProtected]);
 
+  function fail(message) {
+    setFormError(message);
+    toast.error(message);
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
+    setFormError("");
 
     if (!email.trim() || !password) {
-      toast.error("ইমেইল ও পাসওয়ার্ড দুটোই দিন");
+      fail("ইমেইল ও পাসওয়ার্ড দুটোই দিন");
       return;
     }
 
@@ -37,16 +42,17 @@ export default function SignInForm({ next = "/", fromProtected = false }) {
       });
 
       if (error) {
-        toast.error(authErrorMessage(error, "সাইন ইন করা যায়নি"));
+        console.error("sign-in error:", error);
+        fail(authErrorMessage(error, "সাইন ইন করা যায়নি"));
+        setLoading(false);
         return;
       }
 
       toast.success("সফলভাবে সাইন ইন হয়েছে");
-      router.push(next);
-      router.refresh();
-    } catch {
-      toast.error("কিছু একটা সমস্যা হয়েছে, আবার চেষ্টা করুন");
-    } finally {
+      setTimeout(() => window.location.assign(next), 700);
+    } catch (err) {
+      console.error("sign-in exception:", err);
+      fail("সার্ভারের সাথে যোগাযোগ করা যায়নি, আবার চেষ্টা করুন");
       setLoading(false);
     }
   }
@@ -72,6 +78,16 @@ export default function SignInForm({ next = "/", fromProtected = false }) {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+
+        {formError && (
+          <div
+            role="alert"
+            className="rounded-lg border border-error/30 bg-error/10 px-3 py-2 text-sm text-error"
+          >
+            {formError}
+          </div>
+        )}
+
         <button
           type="submit"
           disabled={loading}

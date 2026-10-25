@@ -12,6 +12,10 @@ export function getMarketStats(product) {
 
 export const marketAverage = (m) => (m.min + m.max) / 2;
 
+// গড় দাম অনুযায়ী কম থেকে বেশি সাজানো (Figma র মতো)
+export const sortMarketsByAverage = (markets) =>
+  [...markets].sort((a, b) => marketAverage(a) - marketAverage(b));
+
 export function getMovers(products, dir, count = 6) {
   return products
     .filter((p) => p.change.dir === dir)

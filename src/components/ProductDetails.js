@@ -7,14 +7,33 @@ import {
   formatNumber,
   formatPct,
   formatTaka,
+  formatTakaExact,
 } from "@/lib/bn";
-import { getMarketStats, marketAverage } from "@/lib/stats";
+import {
+  getMarketStats,
+  marketAverage,
+  sortMarketsByAverage,
+} from "@/lib/stats";
 
-function changeSentence(diff) {
-  if (diff > 0) return `গতকালের তুলনায় আজ দাম বেড়েছে · ${formatTaka(diff)}`;
-  if (diff < 0)
-    return `গতকালের তুলনায় আজ দাম কমেছে · ${formatTaka(Math.abs(diff))}`;
-  return "গতকালের তুলনায় আজ দামে কোনো পরিবর্তন নেই";
+function ChangeSentence({ diff }) {
+  if (diff > 0) {
+    return (
+      <>
+        গতকালের তুলনায় আজ দাম{" "}
+        <strong className="font-semibold">বেড়েছে</strong> · {formatTaka(diff)}
+      </>
+    );
+  }
+  if (diff < 0) {
+    return (
+      <>
+        গতকালের তুলনায় আজ দাম{" "}
+        <strong className="font-semibold">কমেছে</strong> ·{" "}
+        {formatTaka(Math.abs(diff))}
+      </>
+    );
+  }
+  return <>গতকালের তুলনায় আজ দামে কোনো পরিবর্তন নেই</>;
 }
 
 function StatCard({ label, value, caption, valueClass = "" }) {
@@ -43,6 +62,7 @@ export default function ProductDetails({ product }) {
 
   const stats = getMarketStats(product);
   const diff = today - yesterday;
+  const sortedMarkets = sortMarketsByAverage(markets);
 
   return (
     <main className="mx-auto max-w-6xl space-y-6 px-4 py-6">
@@ -88,7 +108,9 @@ export default function ProductDetails({ product }) {
               {UNIT_LABEL[unit]}
             </span>
           </div>
-          <p className="mt-2 text-sm">{changeSentence(diff)}</p>
+          <p className="mt-2 text-sm">
+            <ChangeSentence diff={diff} />
+          </p>
         </div>
 
         <div className="rounded-2xl bg-base-200 px-5 py-4 text-center sm:min-w-36">
@@ -125,6 +147,7 @@ export default function ProductDetails({ product }) {
               label="গড় দাম"
               value={formatTaka(stats.avg)}
               caption={`${UNIT_LABEL[unit]}-এর হিসাবে`}
+              valueClass="text-primary"
             />
           </div>
         </div>
@@ -143,16 +166,23 @@ export default function ProductDetails({ product }) {
                 </tr>
               </thead>
               <tbody>
-                {markets.map((m) => (
-                  <tr key={`${m.division}-${m.market}`} className="even:bg-base-200">
+                {sortedMarkets.map((m) => (
+                  <tr
+                    key={`${m.division}-${m.market}`}
+                    className="even:bg-base-200"
+                  >
                     <td className="px-4 py-3 font-medium">{m.market}</td>
                     <td className="px-4 py-3 text-base-content/70">
                       {m.division}
                     </td>
-                    <td className="px-4 py-3 text-right">{formatTaka(m.min)}</td>
-                    <td className="px-4 py-3 text-right">{formatTaka(m.max)}</td>
+                    <td className="px-4 py-3 text-right">
+                      {formatTaka(m.min)}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      {formatTaka(m.max)}
+                    </td>
                     <td className="px-4 py-3 text-right font-semibold">
-                      {formatTaka(marketAverage(m))}
+                      {formatTakaExact(marketAverage(m))}
                     </td>
                   </tr>
                 ))}

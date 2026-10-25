@@ -8,6 +8,14 @@ export const formatNumber = (n) =>
 
 export const formatTaka = (n) => `${formatNumber(n)} টাকা`;
 
+// গড় দামের জন্য: ভগ্নাংশ থাকলে দুই ঘর (৬৩.৫০), না থাকলে পূর্ণসংখ্যা (৬২)
+export const formatTakaExact = (n) => {
+  const fixed = Number.isInteger(n) ? String(n) : n.toFixed(2);
+  const [whole, decimal] = fixed.split(".");
+  const grouped = new Intl.NumberFormat("en-IN").format(Number(whole));
+  return `${toBn(decimal ? `${grouped}.${decimal}` : grouped)} টাকা`;
+};
+
 export const formatPct = (pct) => `${toBn(Math.abs(pct).toFixed(1))}%`;
 
 export const UNIT_LABEL = {
