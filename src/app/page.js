@@ -24,8 +24,8 @@ async function HomeContent() {
       />
 
       <section id="সব-পণ্য" className="scroll-mt-40">
-        <h2 className="text-xl font-bold">সব পণ্য</h2>
-        <p className="mb-4 mt-1 text-sm text-base-content/70">
+        <h2 className="text-xl font-bold leading-7">সব পণ্য</h2>
+        <p className="mb-4 mt-3 text-sm leading-5 text-base-content/70">
           মোট {toBn(products.length)}টি পণ্য দেখানো হচ্ছে
         </p>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

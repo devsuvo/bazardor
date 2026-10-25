@@ -66,7 +66,7 @@ export default function ProductDetails({ product }) {
 
   return (
     <main className="mx-auto max-w-6xl space-y-6 px-4 py-6">
-      <nav aria-label="breadcrumb" className="text-sm">
+      <nav aria-label="breadcrumb" className="py-2 text-sm">
         <ol className="flex flex-wrap items-center gap-2">
           <li>
             <Link href="/" className="hover:text-primary">
